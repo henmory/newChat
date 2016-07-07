@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.henmory.newchat.Activities.CommentMessageActivity"
+    tools:showIn="@layout/activity_comment_message">
+    <include layout="@layout/message_item"
+        android:id="@+id/message_item"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_height"
+        android:layout_below="@id/message_item"
+        android:id="@+id/comment_message_divider"
+        android:background="@android:drawable/divider_horizontal_textfield"/>
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/comment_message_divider"
+        android:id="@+id/comment_lv"
+        android:divider="@android:drawable/divider_horizontal_bright"
+        android:paddingBottom="30dp">
+    </ListView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal">
+        <EditText
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="4"
+            android:id="@+id/comment_message_edit_comment"
+            android:background="@drawable/edit_text_selector"
+            android:textCursorDrawable="@drawable/custom_corsor"/>
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="@string/comment"
+            android:id="@+id/comment_message_btn_comment"
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Widget.Button"/>
+    </LinearLayout>
+
+</RelativeLayout>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/activity_horizontal_margin">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:id="@+id/comment_item_phone_num_key"
+        android:text="phone_num: "/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:id="@+id/comment_item_phone_num_value"
+        android:layout_toRightOf="@id/comment_item_phone_num_key"
+        android:hint="13488783239"/>
+
+    <!--<View android:layout_width="match_parent"-->
+        <!--android:layout_height="@dimen/divider_height"-->
+        <!--android:layout_below="@id/comment_item_phone_num_key"-->
+        <!--android:id="@+id/comment_item_inner__divider"-->
+        <!--android:layout_marginTop="@dimen/divider_margin_top"-->
+        <!--android:layout_marginBottom="@dimen/divider_margin_bottom"-->
+        <!--android:background="@android:color/darker_gray"/>-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/comment_item_phone_num_key">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:id="@+id/comment_item_comment_content"
+            android:text="i am hungry"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="6.20.16:00"
+            android:id="@+id/comment_item_time"
+            android:layout_alignParentRight="true"/>
+
+    </RelativeLayout>
+</RelativeLayout>
