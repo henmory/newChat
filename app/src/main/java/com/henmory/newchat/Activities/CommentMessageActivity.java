@@ -52,7 +52,6 @@ public class CommentMessageActivity extends CommonActivity {
     private ListView lv;
     private List<Comments> mComents;
     private CommentAdapter commentAdapter;
-    private ProgressDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,10 +62,7 @@ public class CommentMessageActivity extends CommonActivity {
         ab.setDisplayHomeAsUpEnabled(true);
         Config.last_time = System.currentTimeMillis();
         System.out.println("CommentMessageActivity------------show comment tap = " + (Config.last_time - Config.middle_time));
-        progressDialog  = new ProgressDialog(CommentMessageActivity.this, ProgressDialog.STYLE_SPINNER);
-        progressDialog.setMessage("load comments, waiting...");
-        progressDialog.setCancelable(false);
-        progressDialog.show();
+
         initView();
         initData();
         Config.middle_time = System.currentTimeMillis();
@@ -122,14 +118,12 @@ public class CommentMessageActivity extends CommonActivity {
                 mComents = (List<Comments>)data;
                 commentAdapter = new CommentAdapter(mComents, CommentMessageActivity.this, R.layout.comment_item);
                 lv.setAdapter(commentAdapter);
-                progressDialog.dismiss();
                 System.out.println("CommentMessageActivity------load comments sucessfully, and datas = " + mComents.toString());
 
             }
         }, new FailCallback() {
             @Override
             public void onFail(int errCode) {
-                progressDialog.dismiss();
                 System.out.println("CommentMessageActivity------load comments failed");
                 System.out.println("CommentMessageActivity----message load data failed errorCode = " + errCode);
                 switch (errCode){

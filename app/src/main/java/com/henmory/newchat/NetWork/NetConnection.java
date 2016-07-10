@@ -28,7 +28,7 @@ public abstract class NetConnection {
 
 
         if ((info != null) && (info.isConnected())) {
-            new DownloadDataTask() {
+            new DownloadDataTask(context) {
 
                 @Override
                 public void taskOnSuccess(String data) {

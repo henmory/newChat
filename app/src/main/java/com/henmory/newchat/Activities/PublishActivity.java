@@ -63,14 +63,9 @@ public class PublishActivity extends CommonActivity {
     }
 
     private void publishMessage(){
-        final ProgressDialog progressDialog = new ProgressDialog(PublishActivity.this, ProgressDialog.STYLE_SPINNER);
-        progressDialog.setCancelable(false);
-        progressDialog.setMessage("publishing, waiting...");
-        progressDialog.show();
         new PublishMessage(PublishActivity.this, new SuccessCallback() {
             @Override
             public void onSuccess(Object string) {
-                progressDialog.dismiss();
                 Intent intent = new Intent(PublishActivity.this, MessageListMainActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putSerializable(Config.MESSAGE_PUBLISH, message);
@@ -83,7 +78,6 @@ public class PublishActivity extends CommonActivity {
         }, new FailCallback() {
             @Override
             public void onFail(int errCode) {
-                progressDialog.dismiss();
                 switch (errCode){
                     case Config.STATUS_TOKEN_INVALID:
                         Toast.makeText(PublishActivity.this,"token invalide", Toast.LENGTH_SHORT).show();

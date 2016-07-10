@@ -52,6 +52,16 @@ public abstract class CommonAdapter<T> extends BaseAdapter {
     /*
    * 范型数据增删
    * */
+    public void addListElements(List<T> data) {
+        if (datas == null) {
+            datas = new ArrayList<>();
+        }
+        for (T t: data) {
+            datas.add(t);
+
+        }
+        notifyDataSetChanged();
+    }
     public void add(T data) {
         if (datas == null) {
             datas = new ArrayList<>();

@@ -12,12 +12,16 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.henmory.newchat.Common.CommonActivity;
@@ -30,7 +34,6 @@ import com.henmory.newchat.Message.Message;
 import com.henmory.newchat.Message.MessageAdapter;
 import com.henmory.newchat.R;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,13 +42,14 @@ public class MessageListMainActivity extends CommonActivity {
     private String phone_num;
     private String token;
     private List<Message> messageList = new ArrayList<>();
-    private MessageAdapter messageAdapter;
+    private MessageAdapter messageAdapter = new MessageAdapter(messageList, this, R.layout.message_item);
     private ListView lv;
-    private ProgressDialog pd;
 
     private ListView lv_navigation;
     private ActionBarDrawerToggle drawerToggle; //为actionbar设置的事件监听器
     private DrawerLayout mDrawerLayout; //真个布局
+
+    private TextView tv_content_null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,12 +57,20 @@ public class MessageListMainActivity extends CommonActivity {
         setContentView(R.layout.activity_message_list_main);
         initNavigation();
 
-        pd =  new ProgressDialog(MessageListMainActivity.this, ProgressDialog.STYLE_SPINNER);
-        pd.setCancelable(false);
-        pd.setMessage("数据加载中，请稍后...");
-        pd.show();
+        tv_content_null = (TextView) findViewById(R.id.content_message_list_main_content_is_null);
+        lv = (ListView) findViewById(R.id.message_list_main_lv);
+        lv.setAdapter(messageAdapter);
+
+        //to comment activity
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                btnClickedCommentMessage(parent,view,position,id);
+            }
+        });
 
         loadData();
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         if (fab != null) {
@@ -69,29 +81,6 @@ public class MessageListMainActivity extends CommonActivity {
                 }
             });
         }
-    }
-
-    private void setListViewData(){
-        lv = (ListView) findViewById(R.id.message_list_main_lv);
-        messageAdapter = new MessageAdapter(messageList, this, R.layout.message_item);
-        lv.setAdapter(messageAdapter);
-
-        //to comment activity
-        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Config.start_time = System.currentTimeMillis();
-                Message message = messageList.get(position);
-                System.out.println("MessageListMainActivity--------to be commented message = " + message);
-                Intent intent = new Intent(MessageListMainActivity.this, CommentMessageActivity.class);
-                intent.putExtra(Config.KEY_PHONE_NUM, message.getPhoneNum());
-                intent.putExtra(Config.KEY_MESSAGE_CONTENT,message.getMsgContent());
-                intent.putExtra(Config.KEY_MESSAGE_ID,message.getMsgId());
-                startActivity(intent);
-                Config.middle_time = System.currentTimeMillis();
-                System.out.println("MessageListMainActivity----------- start activity tap = " + (Config.middle_time - Config.start_time));
-            }
-        });
     }
 
 
@@ -125,10 +114,15 @@ public class MessageListMainActivity extends CommonActivity {
             @Override
             public void onSuccess(Object data) {
                 messageList = (ArrayList<Message>)data;
-                CacheFile.cacheTempDatas(MessageListMainActivity.this, messageList);
-                setListViewData();
-                System.out.println("MessageListMainActivity----message load data successfully");
-                pd.dismiss();
+                if (messageList.size() > 0){
+                    CacheFile.cacheTempDatas(MessageListMainActivity.this, messageList);
+                    messageAdapter.addListElements(messageList);
+                    System.out.println("MessageListMainActivity----message load data successfully");
+                }else{
+                    tv_content_null.setText("content is null");
+                    System.out.println("tmp datas is null");
+                }
+
             }
         }, new FailCallback() {
             @Override
@@ -137,13 +131,13 @@ public class MessageListMainActivity extends CommonActivity {
                 Object o = CacheFile.readTmpDats(MessageListMainActivity.this);
                 System.out.println("MessageListMainActivity----message load data failed, and load tmp datas from file");
                 if (o != null){
-                    messageList = (List<Message>)o;
-                    setListViewData();
+                    messageList = (ArrayList<Message>)o;
+                    messageAdapter.addListElements(messageList);
                     System.out.println("tmp datas = " + messageList);
                 }else{
+                    tv_content_null.setText("content is null");
                     System.out.println("tmp datas is null");
                 }
-                pd.dismiss();
                 switch (errCode){
                     case Config.STATUS_TOKEN_INVALID:
                         Snackbar.make(findViewById(R.id.CoordinatorLayout),"token invalide", Snackbar.LENGTH_SHORT).show();
@@ -234,6 +228,28 @@ public class MessageListMainActivity extends CommonActivity {
         intent.putExtra(Config.KEY_TOKEN,token);
         startActivity(intent);
         System.out.println("MessageListMainActivity---- go to publish message activity");
+    }
+
+    private void btnClickedCommentMessage(AdapterView<?> parent, View view, int position, long id){
+        Config.start_time = System.currentTimeMillis();
+        Message message = messageList.get(position);
+        System.out.println("MessageListMainActivity--------to be commented message = " + message);
+        Intent intent = new Intent(MessageListMainActivity.this, CommentMessageActivity.class);
+        intent.putExtra(Config.KEY_PHONE_NUM, message.getPhoneNum());
+        intent.putExtra(Config.KEY_MESSAGE_CONTENT,message.getMsgContent());
+        intent.putExtra(Config.KEY_MESSAGE_ID,message.getMsgId());
+        startActivity(intent);
+        Config.middle_time = System.currentTimeMillis();
+        System.out.println("MessageListMainActivity----------- start activity tap = " + (Config.middle_time - Config.start_time));
+    }
+
+    private void messageListMainActivityContentIsNull(){
+        RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.content_message_list_main_root_layout);
+        TextView textView = new TextView(this);
+        textView.setText("content is null");
+        textView.setLayoutParams(new DrawerLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT));
+        textView.setGravity(Gravity.CENTER);
+        relativeLayout.addView(textView);
     }
 
 }

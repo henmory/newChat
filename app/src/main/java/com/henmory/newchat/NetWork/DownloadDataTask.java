@@ -1,5 +1,7 @@
 package com.henmory.newchat.NetWork;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.AsyncTask;
 
 import com.henmory.newchat.Main.Config;
@@ -21,11 +23,23 @@ import java.net.URL;
  */
 public abstract class DownloadDataTask extends AsyncTask<String, Integer, String> {
 
+    private Context context;
     private int content_length;
+    private ProgressDialog progressDialog;
 
-
-    public DownloadDataTask() {
+    public DownloadDataTask(Context context) {
+        this.context = context;
         content_length = 0;
+    }
+
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        progressDialog = new ProgressDialog(context, ProgressDialog.STYLE_SPINNER);
+        progressDialog.setMessage("net connectting, and wait......");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
     }
 
     @Override
@@ -36,9 +50,11 @@ public abstract class DownloadDataTask extends AsyncTask<String, Integer, String
     @Override
     protected void onPostExecute(String string) {
         super.onPostExecute(string);
+        progressDialog.dismiss();
         if (string == null) {
             System.out.println("DownloadDataTask error");
             taskOnFail(Config.NET_CONNECTION_ERROR);
+//            System.out.println("DownloadDataTask error1");
         } else{ //has datas, but probably results is wrong
             System.out.println("DownloadDataTask download success,and data = " + string);
             taskOnSuccess(string);
@@ -97,8 +113,17 @@ public abstract class DownloadDataTask extends AsyncTask<String, Integer, String
             }
 
         } catch (IOException e) {
+            System.out.println("DownloadDataTask exception -----------------start");
             e.printStackTrace();
-            taskOnFail(Config.NET_CONNECTION_ERROR);
+            System.out.println("DownloadDataTask exception ------------------end");
+            /**
+             * don't handle errors, or app will be crash when you refresh views,
+             * if you have handled, error code will be executed two times.
+             * after executing these code, onPostExecute function will alse be run;
+             * handle errors with the methord of onPostExecute
+             */
+//            taskOnFail(Config.NET_CONNECTION_ERROR);
+//            System.out.println("DownloadDataTask exception1");
         }
         return null;
     }

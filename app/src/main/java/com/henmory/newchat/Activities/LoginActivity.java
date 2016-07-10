@@ -64,15 +64,9 @@ public class LoginActivity extends CommonActivity{
                 System.out.println("login phone num = " + phone_num);
                 System.out.println("captcha = " + captcha);
 
-                final ProgressDialog pd =  new ProgressDialog(LoginActivity.this, ProgressDialog.STYLE_SPINNER);
-                pd.setCancelable(false);
-                pd.setMessage("登录中，请稍后...");
-                pd.show();
-
                 new Login(LoginActivity.this, new SuccessCallback() {
                     @Override
                     public void onSuccess(Object string) {
-                        pd.dismiss();
                         token = (String) string;
                         Config.cacheToken(LoginActivity.this, (String)string);
                         Intent intent = new Intent(LoginActivity.this, MessageListMainActivity.class);
@@ -86,7 +80,6 @@ public class LoginActivity extends CommonActivity{
                 }, new FailCallback() {
                     @Override
                     public void onFail(int errorCode) {
-                        pd.dismiss();
                         switch(errorCode){
                             case Config.NET_CONNECTION_ERROR:
                                 Snackbar.make(findViewById(R.id.CoordinatorLayout), "errorCode = " + errorCode, Snackbar.LENGTH_SHORT).show();
